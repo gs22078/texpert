@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>TeXperT Templates</title>
+    <script src="{% static 'download.js' %}"></script>
+</head>
+<body>
+<div class="container">
+<h1>Downloads</h1>
+<p>본 페이지는 <a href="https://github.com/gshsTeXperT/TeXperT-Templates">TeXperT Templates</a>의 다운로드 페이지입니다.</p>
+
+<h2>TeXperT Templates</h2>
+
+<ul>
+{% for tree in trees %}
+<li><a href="{{ tree.url }}">{{ tree.path }}</a></li>
+{% endfor %}
+<hr>
+{% for blob in blobs %}
+<li><a href="{{ blob.url }}">{{ blob.path }}</a></li>
+{% endfor %}
+</ul>
+</div>
+</body>
+</html>
