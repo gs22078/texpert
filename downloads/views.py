@@ -10,9 +10,9 @@ repos = [
 
 
 def github_api_requests(url):
-    #github_token = os.environ['GITHUB_TOKEN']
-    #headers = {'Authorization': f'token {github_token}'}
-    return requests.get(url)#, headers=headers)
+    github_token = os.environ['GITHUB_TOKEN']
+    headers = {'Authorization': f'token {github_token}'}
+    return requests.get(url, headers=headers)
 
 
 def index(request):
