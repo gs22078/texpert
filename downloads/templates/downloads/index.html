@@ -5,17 +5,36 @@
     <meta charset="UTF-8">
     <title>TeXperT Templates</title>
     <script src="{% static 'download.js' %}"></script>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
 </head>
 <body>
 <div class="container">
-<h1>Downloads</h1>
-
-<ul>
-    {% for repo in repos %}
-    <li><a href="{% url 'repo_page' repo.owner repo.repo %}">{{ repo.owner }}/{{ repo.repo }}</a></li>
-    {% endfor %}
-</ul>
-{% include 'public/print.html' %}
+    <h1>Downloads</h1>
+    <div class="row">
+        {% for repo in repos %}
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="card-header">{{ repo.owner }}</div>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <img src="{{ repo.avatar }}" alt="avatar"
+                                 style="border-radius: 50%; border: 1px solid #ddd; height: 30px; width: 30px;">
+                            {{ repo.repo }}
+                        </h5>
+                        <p class="card-text">{{ repo.description }}</p>
+                        <a href="{% url 'repo_page' repo.owner repo.repo %}" class="btn btn-primary">Go to
+                            Repository</a>
+                    </div>
+                    <div class="card-footer text-muted">
+                        2 days ago
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% include 'public/print.html' %}
 </div>
 </body>
 </html>

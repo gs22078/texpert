@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Repository Home</title>
+
+</head>
+<body>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Select a GitHub Repository</h1>
+        <div class="row">
+            {% for repo in repos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ repo.owner }}/{{ repo.repo }}</h5>
+                            <form action="{% url 'repo' repo.owner repo.repo %}" method="get">
+                                <button type="submit" class="btn btn-primary">Go to Repository</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Optional: Add Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
