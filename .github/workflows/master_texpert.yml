@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.TEXPERT_GITHUB_API_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
