@@ -22,7 +22,7 @@ def index(request):
         avatar = req['owner']['avatar_url']
         description = req['description']
         tmp.append({'owner': repo['owner'], 'repo': repo['repo'], 'avatar': avatar, 'description': description})
-    context = {'repos': tmp, 'print': os.environ}
+    context = {'repos': tmp}
     return render(request, 'downloads/index.html', context)
 
 
