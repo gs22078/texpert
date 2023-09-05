@@ -50,7 +50,7 @@ def download(request, owner, repo, ref, path):
     dir_tree = github_api_requests(dir_api).json()['tree']
     blobs = [blob for blob in dir_tree if blob['type'] == 'blob']
     # For Azure Web App, save to %TEMP% instead of /tmp
-    tmp = os.environ['TEMP']
+    tmp = os.environ['HOME']
     zip_file = zipfile.ZipFile(f'{tmp}/{path}.zip', 'w')
     for blob in blobs:
         content_raw = f'https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{blob["path"]}'
@@ -64,7 +64,7 @@ def download_repo(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
     download(request, owner, repo, ref, path)
-    tmp = os.environ['TEMP']
+    tmp = os.environ['HOME']
     response = HttpResponse(open(f'{tmp}/{path}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
     os.remove(f'{tmp}/{path}.zip')
@@ -92,7 +92,7 @@ def open_in_overleaf(request, owner, repo, ref, path):
 def open_in_overleaf_zip(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
-    tmp = os.environ['TEMP']
+    tmp = os.environ['HOME']
     response = HttpResponse(open(f'{tmp}/{path}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
     os.remove(f'{tmp}/{path}.zip')
