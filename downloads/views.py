@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import requests
 import os
 from datetime import datetime
@@ -43,22 +43,27 @@ def repo_page(request, owner, repo):
     return render(request, 'downloads/repo_page.html', context)
 
 
-def download_repo(request, owner, repo, ref, path):
+def download(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
     dir_api = f'https://api.github.com/repos/{owner}/{repo}/git/trees/{ref}:{path}?recursive=1'
     dir_tree = github_api_requests(dir_api).json()['tree']
     blobs = [blob for blob in dir_tree if blob['type'] == 'blob']
-    zip_file = zipfile.ZipFile('temp.zip', 'w')
+    zip_file = zipfile.ZipFile(f'downloads/tmp/{repo}.zip', 'w')
     for blob in blobs:
-        content_raw = f'https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}/{blob["path"]}'
+        content_raw = f'https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{blob["path"]}'
         content = requests.get(content_raw).content
         zip_file.writestr(blob['path'], content)
     zip_file.close()
+    return
 
-    response = HttpResponse(open('temp.zip', 'rb'), content_type='application/zip')
+
+def download_repo(request, owner, repo, ref, path):
+    if {'owner': owner, 'repo': repo} not in repos:
+        pass
+    download(request, owner, repo, ref, path)
+    response = HttpResponse(open(f'downloads/tmp/{repo}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
-    os.remove('temp.zip')
     return response
 
 
@@ -69,4 +74,21 @@ def download_file(request, owner, repo, ref, path):
     content = requests.get(content_raw).content
     response = HttpResponse(content, content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}'
+    return response
+
+
+def open_in_overleaf(request, owner, repo, ref, path):
+    if {'owner': owner, 'repo': repo} not in repos:
+        pass
+    download(request, owner, repo, ref, path)
+    url = f'https://www.overleaf.com/docs?snip_uri=https://texpert.azurewebsites.net/downloads/{owner}/{repo}/o/{ref}/{path}.zip'
+    return redirect(url)
+
+
+def open_in_overleaf_zip(request, owner, repo, ref, path):
+    if {'owner': owner, 'repo': repo} not in repos:
+        pass
+    response = HttpResponse(open(f'downloads/tmp/{repo}.zip', 'rb'), content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename={path}.zip'
+    os.remove(f'downloads/tmp/{repo}.zip')
     return response

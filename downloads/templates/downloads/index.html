@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>TeXperT Templates</title>
+    <link rel="stylesheet" href="{% static 'public/css/main.css' %}">
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
@@ -17,13 +19,12 @@
                     <div class="card-header">{{ repo.owner }}</div>
                     <div class="card-body">
                         <h5 class="card-title">
-                            <img src="{{ repo.avatar }}" alt="avatar"
-                                 style="border-radius: 50%; border: 1px solid #ddd; height: 30px; width: 30px;">
+                            <img src="{{ repo.avatar }}" alt="avatar" class="img-avatar">
                             {{ repo.repo }}
                         </h5>
                         <p class="card-text">{{ repo.description }}</p>
-                        <a href="{% url 'downloads:repo_page' repo.owner repo.repo %}" class="btn btn-primary">Go to
-                            Repository</a>
+                        <a href="{% url 'downloads:repo_page' repo.owner repo.repo %}" class="btn btn-primary">
+                            Go to Repository</a>
                     </div>
                     <div class="card-footer text-muted">
                         Last updated {{ repo.last_mod }}

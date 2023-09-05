@@ -21,6 +21,7 @@
     <tr>
         <td>{{ tree.path }}</td>
         <td><a href="{% url 'downloads:download_repo' owner repo ref tree.path %}" class="btn btn-primary">Download</a></td>
+        <td><a href="{% url 'downloads:open_in_overleaf' owner repo ref tree.path %}" class="btn btn-primary">Open in Overleaf</a></td>
     </tr>
     {% endfor %}
     {% for blob in blobs %}
