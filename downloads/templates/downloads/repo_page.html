@@ -1,10 +1,8 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>TeXperT Templates</title>
-    <script src="{% static 'download.js' %}"></script>
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
@@ -17,17 +15,18 @@
 <h2>TeXperT Templates</h2>
 
 <table class="table table-hover">
+    {% csrf_token %}
     <tbody>
     {% for tree in trees %}
     <tr>
         <td>{{ tree.path }}</td>
-        <td><a href="{{ tree.url }}" download>Download</a></td>
+        <td><a href="{% url 'downloads:download_repo' owner repo ref tree.path %}" class="btn btn-primary">Download</a></td>
     </tr>
     {% endfor %}
     {% for blob in blobs %}
     <tr>
         <td>{{ blob.path }}</td>
-        <td><a href="{{ blob.url }}" download>Download</a></td>
+        <td><a href="{% url 'downloads:download_file' owner repo ref blob.path %}" class="btn btn-primary">Download</a></td>
     </tr>
     {% endfor %}
     </tbody>

@@ -1,10 +1,8 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>TeXperT Templates</title>
-    <script src="{% static 'download.js' %}"></script>
     {% load bootstrap5 %}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
@@ -24,11 +22,11 @@
                             {{ repo.repo }}
                         </h5>
                         <p class="card-text">{{ repo.description }}</p>
-                        <a href="{% url 'repo_page' repo.owner repo.repo %}" class="btn btn-primary">Go to
+                        <a href="{% url 'downloads:repo_page' repo.owner repo.repo %}" class="btn btn-primary">Go to
                             Repository</a>
                     </div>
                     <div class="card-footer text-muted">
-                        2 days ago
+                        Last updated {{ repo.last_mod }}
                     </div>
                 </div>
             </div>
