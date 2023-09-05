@@ -43,17 +43,20 @@ def repo_page(request, owner, repo):
     return render(request, 'downloads/repo_page.html', context)
 
 
+try:
+    tmp = os.environ['HOME']
+except KeyError:
+    tmp = os.environ['TMP']
+
 def download(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
     dir_api = f'https://api.github.com/repos/{owner}/{repo}/git/trees/{ref}:{path}?recursive=1'
     dir_tree = github_api_requests(dir_api).json()['tree']
     blobs = [blob for blob in dir_tree if blob['type'] == 'blob']
-    # For Azure Web App, save to %TEMP% instead of /tmp
-    tmp = os.environ['HOME']
     zip_file = zipfile.ZipFile(f'{tmp}/{path}.zip', 'w')
     for blob in blobs:
-        content_raw = f'https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{blob["path"]}'
+        content_raw = f'https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}/{blob["path"]}'
         content = requests.get(content_raw).content
         zip_file.writestr(blob['path'], content)
     zip_file.close()
@@ -64,7 +67,6 @@ def download_repo(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
     download(request, owner, repo, ref, path)
-    tmp = os.environ['HOME']
     response = HttpResponse(open(f'{tmp}/{path}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
     os.remove(f'{tmp}/{path}.zip')
