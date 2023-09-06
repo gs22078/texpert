@@ -48,7 +48,9 @@ try:
 except KeyError:
     tmp = os.environ['TMP']
 
-def download(request, owner, repo, ref, path):
+
+def download(request, owner, repo, ref, path, get_font=False):
+    global fonts
     if {'owner': owner, 'repo': repo} not in repos:
         pass
     dir_api = f'https://api.github.com/repos/{owner}/{repo}/git/trees/{ref}:{path}?recursive=1'
@@ -56,9 +58,18 @@ def download(request, owner, repo, ref, path):
     blobs = [blob for blob in dir_tree if blob['type'] == 'blob']
     zip_file = zipfile.ZipFile(f'{tmp}/{path}.zip', 'w')
     for blob in blobs:
+        if blob['path'] == 'fonts.json':
+            fonts = requests.get(f'https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}/fonts.json').json()
+            continue
         content_raw = f'https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}/{blob["path"]}'
         content = requests.get(content_raw).content
         zip_file.writestr(blob['path'], content)
+    if get_font:
+        for lang in fonts:
+            for font in fonts[lang]:
+                font_raw = f'https://raw.githubusercontent.com/gs22078/TeX-fonts/main/{lang}/{font}'
+                font_content = requests.get(font_raw).content
+                zip_file.writestr(f'fonts/{font}', font_content)
     zip_file.close()
     return
 
@@ -66,7 +77,7 @@ def download(request, owner, repo, ref, path):
 def download_repo(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
-    download(request, owner, repo, ref, path)
+    download(request, owner, repo, ref, path, get_font=True)
     response = HttpResponse(open(f'{tmp}/{path}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
     os.remove(f'{tmp}/{path}.zip')
@@ -86,7 +97,7 @@ def download_file(request, owner, repo, ref, path):
 def open_in_overleaf(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
-    download(request, owner, repo, ref, path)
+    download(request, owner, repo, ref, path, get_font=True)
     url = f'https://www.overleaf.com/docs?snip_uri=https://texpert.azurewebsites.net/downloads/{owner}/{repo}/o/{ref}/{path}.zip'
     return redirect(url)
 
