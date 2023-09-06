@@ -1,9 +1,10 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import render, redirect
 import requests
 import os
 from datetime import datetime
 import zipfile
+import shutil
 
 repos = [
     {'owner': 'gshsTeXperT', 'repo': 'TeXperT-templates'},
@@ -84,7 +85,7 @@ def download(request, owner, repo, ref, path, get_font=False, overleaf=False):
 def download_repo(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
-    download(request, owner, repo, ref, path)
+    download(request, owner, repo, ref, path, get_font=True, overleaf=True)
     response = HttpResponse(open(f'{tmp}/{path}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
     os.remove(f'{tmp}/{path}.zip')
@@ -109,11 +110,34 @@ def open_in_overleaf(request, owner, repo, ref, path):
     return redirect(url)
 
 
+def generate_response(file_path):
+    with open(file_path, 'rb') as file:
+        while True:
+            data = file.read(4096)
+            if not data:
+                break
+            yield data
+
+
+'''
 def open_in_overleaf_zip(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
-    tmp = os.environ['HOME']
     response = HttpResponse(open(f'{tmp}/{path}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
-    os.remove(f'{tmp}/{path}.zip')
+    def delete_file(response):
+        shutil.rmtree(file_path)
+    response.closed = delete_file(response)
+    return response
+'''
+
+
+def open_in_overleaf_zip(request, owner, repo, ref, path):
+    if {'owner': owner, 'repo': repo} not in repos:
+        pass
+    download(request, owner, repo, ref, path, get_font=True, overleaf=True)
+    file_path = f'{tmp}/{path}.zip'
+    response = StreamingHttpResponse(generate_response(file_path), content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename={path}.zip'
+    os.remove(file_path)
     return response
