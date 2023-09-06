@@ -11,8 +11,9 @@ repos = [
 ]
 
 
-def github_api_requests(url):
-    github_token = os.environ['GITHUB_TOKEN']
+def github_api_requests(url, public=True):
+    key = 'PUBLIC' if public else 'PRIVATE'
+    github_token = os.environ[f'GITHUB_TOKEN_{key}']
     headers = {'Authorization': f'token {github_token}'}
     return requests.get(url, headers=headers)
 
@@ -68,7 +69,7 @@ def download(request, owner, repo, ref, path, get_font=False):
         for lang in fonts:
             for font in fonts[lang]:
                 font_raw = f'https://raw.githubusercontent.com/gs22078/TeX-fonts/main/{lang}/{font}'
-                font_content = requests.get(font_raw).content
+                font_content = github_api_requests(font_raw, public=False).content
                 zip_file.writestr(f'fonts/{font}', font_content)
     zip_file.close()
     return
