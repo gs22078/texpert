@@ -1,19 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home</title>
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-</head>
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <a href="{% url 'downloads:index' %}" class="btn btn-primary">Download</a>
-            </div>
-        </div>
+{% extends 'public/base.html' %}
+
+{% block title %}Home - TeXperT{% endblock %}
+{% block content %}
+    <div class="text-center">
+    <h1 class="mt-5">GSHS TeXperT</h1>
+    <p class="lead">Welcome to the home page!</p>
+
+    <p> GSHS TeXperT Website is still under construction. I am working hard to add more contents and features.</p>
+    <p> If you have any questions, requests, or suggestions, please <a href="{% url 'home:contact' %}">contact me</a>.</p>
+    <p> Thank you for visiting my website.</p>
     </div>
-</body>
-</html>
+{% endblock %}
