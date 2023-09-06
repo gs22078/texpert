@@ -110,35 +110,10 @@ def open_in_overleaf(request, owner, repo, ref, path):
     return redirect(url)
 
 
-def generate_response(file_path):
-    with open(file_path, 'rb') as file:
-        while True:
-            # We have to read the file with size 10MB each time
-            data = file.read(10485760)
-            if not data:
-                break
-            yield data
-
-
-'''
 def open_in_overleaf_zip(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
     response = HttpResponse(open(f'{tmp}/{path}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
-    def delete_file(response):
-        shutil.rmtree(file_path)
-    response.closed = delete_file(response)
-    return response
-'''
-
-
-def open_in_overleaf_zip(request, owner, repo, ref, path):
-    if {'owner': owner, 'repo': repo} not in repos:
-        pass
-    download(request, owner, repo, ref, path, get_font=True, overleaf=True)
-    file_path = f'{tmp}/{path}.zip'
-    response = StreamingHttpResponse(generate_response(file_path), content_type='application/zip')
-    response['Content-Disposition'] = f'attachment; filename={path}.zip'
-    os.remove(file_path)
+    os.remove(f'{tmp}/{path}.zip')
     return response
