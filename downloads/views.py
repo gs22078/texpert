@@ -66,10 +66,10 @@ def download(request, owner, repo, ref, path, get_font=False, overleaf=False):
         content = requests.get(content_raw).content
         if overleaf:
             if blob['path'].endswith('.tex'):
-                if b'\\documentclass[' in content:
-                    content = content.replace(b'\n\\documentclass[', b'\\documentclass[overleaf,')
-                elif b'\\documentclass{' in content:
-                    content = content.replace(b'\n\\documentclass{', b'\\documentclass[overleaf]{')
+                if b'\documentclass[' in content:
+                    content = content.replace(b'\documentclass[', b'\documentclass[overleaf,')
+                elif b'\documentclass{' in content:
+                    content = content.replace(b'\documentclass{', b'\documentclass[overleaf]{')
         zip_file.writestr(blob['path'], content)
     if get_font:
         for lang in fonts:
