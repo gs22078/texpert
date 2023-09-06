@@ -50,7 +50,7 @@ except KeyError:
     tmp = os.environ['TMP']
 
 
-def download(request, owner, repo, ref, path, get_font=False):
+def download(request, owner, repo, ref, path, get_font=False, overleaf=False):
     global fonts
     if {'owner': owner, 'repo': repo} not in repos:
         pass
@@ -64,6 +64,12 @@ def download(request, owner, repo, ref, path, get_font=False):
             continue
         content_raw = f'https://raw.githubusercontent.com/{owner}/{repo}/{ref}/{path}/{blob["path"]}'
         content = requests.get(content_raw).content
+        if overleaf:
+            if blob['path'].endswith('.tex'):
+                if b'\\documentclass[' in content:
+                    content = content.replace(b'\n\\documentclass[', b'\\documentclass[overleaf,')
+                elif b'\\documentclass{' in content:
+                    content = content.replace(b'\n\\documentclass{', b'\\documentclass[overleaf]{')
         zip_file.writestr(blob['path'], content)
     if get_font:
         for lang in fonts:
@@ -78,7 +84,7 @@ def download(request, owner, repo, ref, path, get_font=False):
 def download_repo(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
-    download(request, owner, repo, ref, path, get_font=True)
+    download(request, owner, repo, ref, path)
     response = HttpResponse(open(f'{tmp}/{path}.zip', 'rb'), content_type='application/zip')
     response['Content-Disposition'] = f'attachment; filename={path}.zip'
     os.remove(f'{tmp}/{path}.zip')
@@ -98,7 +104,7 @@ def download_file(request, owner, repo, ref, path):
 def open_in_overleaf(request, owner, repo, ref, path):
     if {'owner': owner, 'repo': repo} not in repos:
         pass
-    download(request, owner, repo, ref, path, get_font=True)
+    download(request, owner, repo, ref, path, get_font=True, overleaf=True)
     url = f'https://www.overleaf.com/docs?snip_uri=https://texpert.azurewebsites.net/downloads/{owner}/{repo}/o/{ref}/{path}.zip'
     return redirect(url)
 
