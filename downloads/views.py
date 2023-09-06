@@ -113,7 +113,8 @@ def open_in_overleaf(request, owner, repo, ref, path):
 def generate_response(file_path):
     with open(file_path, 'rb') as file:
         while True:
-            data = file.read(4096)
+            # We have to read the file with size 10MB each time
+            data = file.read(10485760)
             if not data:
                 break
             yield data
