@@ -69,7 +69,7 @@ def download(request, owner, repo, ref, path, get_font=False):
         for lang in fonts:
             for font in fonts[lang]:
                 font_raw = f'https://raw.githubusercontent.com/gs22078/TeX-fonts/main/{lang}/{font}'
-                font_content = github_api_requests(font_raw, public=False).content
+                font_content = github_api_requests(font_raw).content
                 zip_file.writestr(f'fonts/{font}', font_content)
     zip_file.close()
     return
