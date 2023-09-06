@@ -51,7 +51,7 @@ except KeyError:
 
 
 def download(request, owner, repo, ref, path, get_font=False, overleaf=False):
-    global fonts
+    fonts = {}
     if {'owner': owner, 'repo': repo} not in repos:
         pass
     dir_api = f'https://api.github.com/repos/{owner}/{repo}/git/trees/{ref}:{path}?recursive=1'
