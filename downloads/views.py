@@ -75,7 +75,7 @@ def download(request, owner, repo, ref, path, get_font=False, overleaf=False):
     if get_font:
         for lang in fonts:
             for font in fonts[lang]:
-                font_content = requests.get(f'https://texpert.azurewebsites.net/storage/texpert/{font}').content
+                font_content = requests.get(f'https://raw.githubusercontent.com/gs22078/TeX-fonts/main/{lang}/{font}').content
                 zip_file.writestr(f'fonts/{font}', font_content)
     zip_file.close()
     return
